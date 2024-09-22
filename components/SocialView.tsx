@@ -1,6 +1,6 @@
 import { Divider, Heading } from "@chakra-ui/react";
 import { EventMetaData } from "types/EventMetaData";
-import ScorecardSummaryTable from "components/ScorecardSummaryTable";
+import ScorecardSummaryTable from "./ScorecardSummaryTable";
 
 interface Props {
   event: EventMetaData;
