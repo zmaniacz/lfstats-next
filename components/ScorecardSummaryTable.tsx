@@ -13,8 +13,8 @@ interface Props {
   eventId: number;
 }
 
-export const FullDumbScorecardFragment = gql(/* GraphQL */ `
-  fragment FullDumbScorecard on scorecards {
+export const FullScorecardFragment = gql(/* GraphQL */ `
+  fragment FullScorecardDocument on scorecards {
     id
     player {
       id
@@ -85,7 +85,7 @@ const GET_EVENT_FULL_SCORECARD_DATA = gql(/* GraphQL */ `
   query EventFullScorecardData($id: bigint!) {
     event: events_by_pk(id: $id) {
       scorecards {
-        ...FullDumbScorecard
+        ...FullScorecardDocument
       }
     }
   }
@@ -104,7 +104,6 @@ export default function ScorecardSummaryTable(props: Props) {
     variables: { id: props.eventId },
   });
 
-  //const [rowData, setRowData] = useState<FullScorecard[]>();
   let rowData = null;
   const colDefs: ColDef[] = [
     {
@@ -176,12 +175,6 @@ export default function ScorecardSummaryTable(props: Props) {
   const gridOptions: GridOptions = {
     sortingOrder: ["desc", "asc", null],
   };
-
-  /*useEffect(() => {
-    if (data && data.event) {
-      setRowData(data.event?.scorecards);
-    }
-  }, [data]);*/
 
   if (data) rowData = data.event?.scorecards;
 
