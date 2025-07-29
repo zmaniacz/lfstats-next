@@ -35,6 +35,7 @@ import { MotionTable, MotionTr } from "./MotionTable";
 import { PositionIcon } from "./PositionIcon";
 import ReplayActions from "./ReplayActions";
 import ChompAlert from "./ChompAlert";
+import { DateTime } from "luxon";
 
 interface ReplayProps {
   replay: ReplayData;
@@ -43,7 +44,7 @@ interface ReplayProps {
 type Player = Omit<GameEntity, "game_entity_states">;
 
 export default function ReplayView({ replay }: ReplayProps) {
-  const missionStart = new Date(replay.mission_start);
+  const missionStart = DateTime.fromISO(replay.mission_start);
   const missionLength = Math.ceil(replay.mission_length / 1000);
 
   const {
@@ -65,7 +66,7 @@ export default function ReplayView({ replay }: ReplayProps) {
           const playerEntityStates = player.game_entity_states ?? [];
           return [...acc, ...playerEntityStates];
         },
-        []
+        [],
       );
       return [...acc, ...teamEntityStates];
     }, []);
@@ -101,7 +102,7 @@ export default function ReplayView({ replay }: ReplayProps) {
           total +
           (activeStates.find((state) => state?.entity_id === entity.id)
             ?.score || 0),
-        0
+        0,
       ),
     }));
     return scores;
@@ -110,8 +111,8 @@ export default function ReplayView({ replay }: ReplayProps) {
   useEffect(() => {
     setVisibleActions(
       replay.game_actions.filter(
-        (action) => action.action_time <= elapsedTime * 1000
-      )
+        (action) => action.action_time <= elapsedTime * 1000,
+      ),
     );
   }, [replay.game_actions, elapsedTime]);
 
@@ -128,8 +129,8 @@ export default function ReplayView({ replay }: ReplayProps) {
       <Box maxW="2xl" key={"game header"} p={2} my={4} mx="auto">
         <Flex>
           <Heading>
-            {replay.center?.name} Replay at {missionStart.getHours()}:
-            {missionStart.getMinutes()}
+            {replay.center?.name} Replay{" "}
+            {missionStart.toLocaleString(DateTime.DATETIME_SHORT)}
           </Heading>
         </Flex>
       </Box>
@@ -224,7 +225,7 @@ export default function ReplayView({ replay }: ReplayProps) {
           <Slider
             aria-label={"slider-game-time"}
             defaultValue={0}
-            value={Math.floor(elapsedTime / 5) * 5 ?? 0}
+            value={Math.floor(elapsedTime / 5) * 5}
             min={0}
             max={missionLength}
             step={5}
@@ -266,7 +267,7 @@ export default function ReplayView({ replay }: ReplayProps) {
         >
           {replay.game_teams
             .filter(
-              ({ team_desc }: { team_desc: string }) => team_desc !== "Neutral"
+              ({ team_desc }: { team_desc: string }) => team_desc !== "Neutral",
             )
             .sort((firstTeam, secondTeam) => {
               const firstTeamScore =
@@ -280,7 +281,7 @@ export default function ReplayView({ replay }: ReplayProps) {
             })
             .map((team) => {
               const teamData = teamScores.find(
-                (tScore) => tScore.team === team.team_desc
+                (tScore) => tScore.team === team.team_desc,
               );
               return (
                 <MotionTable
@@ -318,23 +319,23 @@ export default function ReplayView({ replay }: ReplayProps) {
                     {team.game_entities
                       .filter(
                         ({ entity_type }: { entity_type: string }) =>
-                          entity_type === "player"
+                          entity_type === "player",
                       )
                       .sort((firstEntity, secondEntity) => {
                         const firstEntityScore =
                           activeStates.find(
-                            (state) => state?.entity_id === firstEntity.id
+                            (state) => state?.entity_id === firstEntity.id,
                           )?.score ?? 0;
                         const secondEntityScore =
                           activeStates.find(
-                            (state) => state?.entity_id === secondEntity.id
+                            (state) => state?.entity_id === secondEntity.id,
                           )?.score ?? 0;
                         return secondEntityScore - firstEntityScore;
                       })
                       .map((entity) => {
                         const state =
                           activeStates.find(
-                            (state) => state?.entity_id === entity.id
+                            (state) => state?.entity_id === entity.id,
                           ) ?? null;
                         return (
                           <MotionTr
