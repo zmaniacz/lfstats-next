@@ -8,6 +8,7 @@ import { ColDef, GridOptions, ValueFormatterParams } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { useQuery } from "@apollo/client";
+import { useMemo } from "react";
 
 interface Props {
   eventId: number;
@@ -105,72 +106,76 @@ export default function ScorecardSummaryTable(props: Props) {
   });
 
   let rowData = null;
-  const colDefs: ColDef[] = [
-    {
-      field: "player.player_name",
-      filter: true,
-      headerName: "Player Name",
-      flex: 2,
-      cellRenderer: (props: { value: number; data: FullScorecard }) => {
-        return (
-          <ChakraNextLink
-            href={`/players/${props.data.player.id}`}
-            color={props.data.team}
-          >
-            {props.value}
-          </ChakraNextLink>
-        );
+  //const { }
+  const colDefs: ColDef[] = useMemo(
+    () => [
+      {
+        field: "player.player_name",
+        filter: true,
+        headerName: "Player Name",
+        flex: 2,
+        cellRenderer: (props: { value: number; data: FullScorecard }) => {
+          return (
+            <ChakraNextLink
+              href={`/players/${props.data.player.id}`}
+              color={props.data.team}
+            >
+              {props.value}
+            </ChakraNextLink>
+          );
+        },
       },
-    },
-    {
-      field: "game.name",
-      filter: true,
-      flex: 2,
-      cellRenderer: (props: { value: string; data: FullScorecard }) => {
-        return (
-          <ChakraNextLink
-            href={`/games/${props.data.game.id}`}
-            color={props.data.game.winner}
-          >
-            {props.value}
-          </ChakraNextLink>
-        );
+      {
+        field: "game.name",
+        filter: true,
+        flex: 2,
+        cellRenderer: (props: { value: string; data: FullScorecard }) => {
+          return (
+            <ChakraNextLink
+              href={`/games/${props.data.game.id}`}
+              color={props.data.game.winner}
+            >
+              {props.value}
+            </ChakraNextLink>
+          );
+        },
       },
-    },
-    {
-      field: "position",
-      filter: true,
-      flex: 2,
-      cellRenderer: (props: { value: string; data: FullScorecard }) => {
-        return <Text color={props.data.team}>{props.value}</Text>;
+      {
+        field: "position",
+        filter: true,
+        flex: 2,
+        cellRenderer: (props: { value: string; data: FullScorecard }) => {
+          return <Text color={props.data.team}>{props.value}</Text>;
+        },
       },
-    },
-    { field: "score", flex: 1 },
-    {
-      field: "mvp",
-      headerName: "MVP",
-      cellRenderer: (props: { value: number; data: FullScorecard }) => {
-        return (
-          <MVPModal mvp={props.value} mvpDetails={props.data.mvp_details} />
-        );
+      { field: "score", flex: 1 },
+      {
+        field: "mvp",
+        headerName: "MVP",
+        cellRenderer: (props: { value: number; data: FullScorecard }) => {
+          return (
+            <MVPModal mvp={props.value} mvpDetails={props.data.mvp_details} />
+          );
+        },
+        flex: 1,
+        sort: "desc",
       },
-      flex: 1,
-      sort: "desc",
-    },
-    {
-      field: "hit_diff",
-      headerName: "Hit Diff",
-      valueFormatter: hitdiffFormatter,
-      flex: 1,
-    },
-    { field: "medic_hits", headerName: "Medic Hits", flex: 1 },
-    {
-      field: "accuracy",
-      valueFormatter: accuracyFormatter,
-      flex: 1,
-    },
-    { field: "shot_team", headerName: "Shot Team", flex: 1 },
-  ];
+      {
+        field: "hit_diff",
+        headerName: "Hit Diff",
+        valueFormatter: hitdiffFormatter,
+        flex: 1,
+      },
+      { field: "medic_hits", headerName: "Medic Hits", flex: 1 },
+      {
+        field: "accuracy",
+        valueFormatter: accuracyFormatter,
+        flex: 1,
+      },
+      { field: "shot_team", headerName: "Shot Team", flex: 1 },
+    ],
+    []
+  );
 
   const gridOptions: GridOptions = {
     sortingOrder: ["desc", "asc", null],
@@ -179,7 +184,7 @@ export default function ScorecardSummaryTable(props: Props) {
   if (data) rowData = data.event?.scorecards;
 
   return (
-    <div className="ag-theme-quartz">
+    <div className="ag-theme-quartz-dark">
       <AgGridReact
         gridOptions={gridOptions}
         rowData={rowData}
